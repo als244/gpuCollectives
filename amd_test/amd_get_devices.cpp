@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     int ndevs = 0;
     CHECK_HIP_ERROR(hipGetDeviceCount(&ndevs));
 
-    devProp = hipGetDeviceProperties();
+    hipGetDeviceProperties(&devProp, 0);
     for (int i = 0; i < ndevs; i++)
     {
         CHECK_HIP_ERROR(hipGetDeviceCount(&devProp, i));
