@@ -10,4 +10,4 @@ amdTest: amd_dummy.cpp
 	hipcc amd_dummy.cpp -lrocblas -o amdTest -lm
 
 miOpen: amd_miopen.cpp
-	hipcc amd_dummy.cpp -lhip -o miOpen -lmiopen
+	hipcc amd_miopen.cpp -o miOpen -lm
