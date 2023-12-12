@@ -1,5 +1,4 @@
 #include <hip/hip_runtime.h>
-// #include <hip_runtime_api.h>
 #include <math.h>
 #include <rocblas/rocblas.h>
 #include <stdio.h>
