@@ -8,3 +8,6 @@ getDevices: amd_get_devices.cpp
 
 amdTest: amd_dummy.cpp
 	hipcc amd_dummy.cpp -lrocblas -o amdTest -lm
+
+miOpen: amd_miopen.cpp
+	hipcc amd_dummy.cpp -lhip -o miOpen -lmiopen
