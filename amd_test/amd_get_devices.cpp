@@ -1,11 +1,10 @@
 #include <hip/hip_runtime.h>
-#include <hip_runtime_api.h>
+// #include <hip_runtime_api.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-
 #define CHECK_HIP_ERROR(error)                    \
-    if(error != hipSuccess)                       \
+    if (error != hipSuccess)                      \
     {                                             \
         fprintf(stderr,                           \
                 "hip error: '%s'(%d) at %s:%d\n", \
@@ -17,7 +16,7 @@
     }
 
 #define CHECK_ROCBLAS_STATUS(status)                  \
-    if(status != rocblas_status_success)              \
+    if (status != rocblas_status_success)             \
     {                                                 \
         fprintf(stderr, "rocBLAS error: ");           \
         fprintf(stderr,                               \
@@ -29,14 +28,15 @@
         exit(EXIT_FAILURE);                           \
     }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
-    
+
     int ndevs = 0;
     CHECK_HIP_ERROR(hipGetDeviceCount(&ndevs));
-    
+
     hipGetDeviceProperties devProp;
-    for (int i = 0; i < ndevs; i++){
+    for (int i = 0; i < ndevs; i++)
+    {
         CHECK_HIP_ERROR(hipGetDeviceCount(&devProp, i));
         printf("Device %i:\n\tName: %s\n\tMulti-Processor Count: %d\n", i, devProp.name, devProp.multiProcessorCount);
     }
