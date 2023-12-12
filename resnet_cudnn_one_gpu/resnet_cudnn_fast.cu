@@ -972,13 +972,13 @@ void load_new_batch(Train_ResNet * trainer, Class_Metadata * class_metadata, Bat
 		}
 
 		// load new shard into RAM
-		print_ret = asprintf(&shard_images_filepath, "/mnt/storage/data/vision/imagenet/2012/train_data_shards/nchw/%03d.images", cur_shard_id);
+		print_ret = asprintf(&shard_images_filepath, "../sample_data/%03d.images", cur_shard_id);
 		FILE * shard_images_file = fopen(shard_images_filepath, "rb");
 		n_read = fread(full_shard_images, sizeof(float), ((size_t) shard_n_images) * ((size_t) image_size), shard_images_file);
 		fclose(shard_images_file);
 		free(shard_images_filepath);
 
-		print_ret = asprintf(&shard_labels_filepath, "/mnt/storage/data/vision/imagenet/2012/train_data_shards/nchw/%03d.labels", cur_shard_id);
+		print_ret = asprintf(&shard_labels_filepath, "../sample_data/%03d.labels", cur_shard_id);
 		FILE * shard_labels_file = fopen(shard_labels_filepath, "rb");
 		n_read = fread(full_shard_correct_classes, sizeof(int), shard_n_images, shard_labels_file);
 		fclose(shard_labels_file);
@@ -3231,9 +3231,9 @@ int main(int argc, char *argv[]) {
 	int N_CLASSES = 1000;
 	
 	// GETTING CLASS METADETA
-	char * LABEL_FILENAME = (char *) "/mnt/storage/data/vision/imagenet/2012/id_to_label_mapping.txt";
-	char * SYNSET_FILENAME = (char *) "/mnt/storage/data/vision/imagenet/2012/id_to_synset_mapping.txt";
-	char * COUNTS_FILENAME = (char *) "/mnt/storage/data/vision/imagenet/2012/id_to_img_count_mapping.txt";
+	char * LABEL_FILENAME = (char *) "../sample_data/id_to_label_mapping.txt";
+	char * SYNSET_FILENAME = (char *) "../sample_data/id_to_synset_mapping.txt";
+	char * COUNTS_FILENAME = (char *) "../sample_data/id_to_img_count_mapping.txt";
 	Class_Metadata * class_metadata = populate_class_info(LABEL_FILENAME, SYNSET_FILENAME, COUNTS_FILENAME, N_CLASSES);
 	int total_images = 0;
 	for (int i = 0; i < N_CLASSES; i++){
@@ -3294,7 +3294,7 @@ int main(int argc, char *argv[]) {
 	cudnnStatus_t cudnn_status = cudnnCreate(&cudnn);
 	//printf("Create Status: %s\n\n", cudnnGetErrorString(cudnn_status));
 
-	const char * MY_DUMP_DIR = "cudnn_fast";
+	const char * MY_DUMP_DIR = "cudnn_fast_single";
 
 	Train_ResNet * trainer = init_trainer(model, batch, BATCH_SIZE, LEARNING_RATE, WEIGHT_DECAY, MEAN_DECAY, VAR_DECAY, EPS, N_EPOCHS, &cudnn, MY_DUMP_DIR);
 
@@ -3325,7 +3325,7 @@ int main(int argc, char *argv[]) {
 
 	char * loss_filepath = NULL;
 	int print_ret;
-	print_ret = asprintf(&loss_filepath, "/mnt/storage/data/vision/imagenet/training_dumps/%s/avg_loss_log.txt", MY_DUMP_DIR);
+	print_ret = asprintf(&loss_filepath, "./training_dumps/%s/avg_loss_log.txt", MY_DUMP_DIR);
 	FILE * loss_file = fopen(loss_filepath, "w");
 
 	// if this was loaded from checkpoint
