@@ -3446,7 +3446,7 @@ int main(int argc, char *argv[]) {
 
 	double time = (t2.tv_sec - t1.tv_sec)  + (double) (t2.tv_nsec - t1.tv_nsec) / 1000000000.0;
 
-	printf("\n\nTIME TAKEN: 1.31%f\n", time);
+	printf("\n\nTIME TAKEN: %1.31f\n", time);
 
 	// DO A FINAL DUMP AFTER MODEL FINISHES (stored at 77777777)
 	int FINAL_DUMP_ID = 77777777;
