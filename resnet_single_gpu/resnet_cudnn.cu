@@ -1095,23 +1095,23 @@ void prepareAndDoTensorOp(Train_ResNet * trainer, char * op_type, size_t size, i
 	cudnnCreateOpTensorDescriptor(&op_descriptor);
 
 	float alpha1 = 1, alpha2 = 1, beta = 0; 
-	if (strcmp(op_type, "ADD")){
+	if (strcmp(op_type, "ADD") == 0){
 		cudnnSetOpTensorDescriptor(op_descriptor, CUDNN_OP_TENSOR_ADD, CUDNN_DATA_FLOAT, CUDNN_NOT_PROPAGATE_NAN);
 	}
-	else if (strcmp(op_type, "SUB")){
+	else if (strcmp(op_type, "SUB") == 0){
 		cudnnSetOpTensorDescriptor(op_descriptor, CUDNN_OP_TENSOR_ADD, CUDNN_DATA_FLOAT, CUDNN_NOT_PROPAGATE_NAN);
 		alpha2 = -1;
 	}
-	else if (strcmp(op_type, "MUL")){
+	else if (strcmp(op_type, "MUL") == 0){
 		cudnnSetOpTensorDescriptor(op_descriptor, CUDNN_OP_TENSOR_MUL, CUDNN_DATA_FLOAT, CUDNN_NOT_PROPAGATE_NAN);
 	}
-	else if (strcmp(op_type, "MIN")){
+	else if (strcmp(op_type, "MIN") == 0){
 		cudnnSetOpTensorDescriptor(op_descriptor, CUDNN_OP_TENSOR_MIN, CUDNN_DATA_FLOAT, CUDNN_NOT_PROPAGATE_NAN);
 	}
-	else if (strcmp(op_type, "MAX")){
+	else if (strcmp(op_type, "MAX") == 0){
 		cudnnSetOpTensorDescriptor(op_descriptor, CUDNN_OP_TENSOR_MAX, CUDNN_DATA_FLOAT, CUDNN_NOT_PROPAGATE_NAN);
 	}
-	else if (strcmp(op_type, "SQRT")){
+	else if (strcmp(op_type, "SQRT") == 0){
 		cudnnSetOpTensorDescriptor(op_descriptor, CUDNN_OP_TENSOR_SQRT, CUDNN_DATA_FLOAT, CUDNN_NOT_PROPAGATE_NAN);
 	}
 	else{
