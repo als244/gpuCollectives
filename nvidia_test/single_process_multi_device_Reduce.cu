@@ -64,13 +64,13 @@ int main(int argc, char* argv[])
   //initializing NCCL
   NCCLCHECK(ncclCommInitAll(comms, nDev, devs));
 
-  //calling NCCL communication API. Group API is required when using
-  //multiple devices per thread
+    //calling NCCL communication API. Group API is required when using
+   //multiple devices per thread
   // Starts the CUDA timer
   start = clock();
   NCCLCHECK(ncclGroupStart());
   for (int i = 0; i < nDev; ++i)
-    NCCLCHECK(ncclAllReduce((const void*)sendbuff[i], (void*)recvbuff[i], size, ncclFloat, ncclSum,
+    NCCLCHECK(ncclReduce((const void*)sendbuff[i], (void*)recvbuff[i], size, ncclFloat, ncclSum, devs[0],
         comms[i], s[i]));
   NCCLCHECK(ncclGroupEnd());
 
@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
     CUDACHECK(cudaFree(sendbuff[i]));
     CUDACHECK(cudaFree(recvbuff[i]));
   }
-  
+
   milliseconds = (double) (end - start) / CLOCKS_PER_SEC;
 
   printf("%1.31f\n", milliseconds);
