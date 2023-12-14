@@ -1140,7 +1140,7 @@ void prepareAndDoActivation(Train_ResNet * trainer, size_t size, float * input, 
 	cudnnActivationDescriptor_t activation_descriptor;
 	cudnnCreateActivationDescriptor(&activation_descriptor);
 
-	double cap = 10;
+	double cap = 6;
 
 	cudnnSetActivationDescriptor(activation_descriptor, CUDNN_ACTIVATION_RELU, CUDNN_NOT_PROPAGATE_NAN, cap);
 
@@ -1167,7 +1167,7 @@ void prepareAndDoActivationDeriv(Train_ResNet * trainer, size_t size, float * in
 	cudnnActivationDescriptor_t activation_descriptor;
 	cudnnCreateActivationDescriptor(&activation_descriptor);
 
-	double cap = 10;
+	double cap = 6;
 
 	cudnnSetActivationDescriptor(activation_descriptor, CUDNN_ACTIVATION_RELU, CUDNN_NOT_PROPAGATE_NAN, cap);
 
@@ -1412,7 +1412,7 @@ void prepreAndDoConvolutionDeriv(Train_ResNet * trainer, int in_spatial_dim, int
 			//free(perfResultsData);
 
 
-			*dataAlgo = perfResultsData[0].algo;
+			*dataAlgo = min_algo;
 			free(perfResultsData);
 		}
 
