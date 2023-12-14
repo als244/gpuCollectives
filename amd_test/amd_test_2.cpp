@@ -92,10 +92,10 @@ int main(int argc, char *argv[])
   // multiple devices per thread
   //  Starts the CUDA timer
   start = clock();
-  RCCLCHECK(rcclGroupStart());
+  RCCLCHECK(ncclGroupStart());
   for (int i = 0; i < nDev; ++i)
-    RCCLCHECK(rcclAllReduce((const void *)sendbuff[i], (void *)recvbuff[i], size, ncclFloat, ncclSum, comms[i], s[i]));
-  RCCLCHECK(rcclGroupEnd());
+    RCCLCHECK(ncclAllReduce((const void *)sendbuff[i], (void *)recvbuff[i], size, ncclFloat, ncclSum, comms[i], s[i]));
+  RCCLCHECK(ncclGroupEnd());
 
   // synchronizing on HIP streams to wait for completion of RCCL operation
   for (int i = 0; i < nDev; ++i)
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 
   // finalizing RCCL
   for (int i = 0; i < nDev; ++i)
-    RCCLCHECK(rcclCommDestroy(comms[i]));
+    RCCLCHECK(ncclCommDestroy(comms[i]));
 
   // Dump to CSV
   FILE *file = fopen("output.csv", "a");
