@@ -1,44 +1,27 @@
-#include <rccl/rccl.h>
+#include <stdio.h>
+#include <hip/hip_runtime.h>
+#include "/usr/include/nccl.h"
 #include <time.h>
 
-#include <hip/hip_runtime.h>
-#include <hip/hip_vector_types.h>
-#include <rocblas/rocblas.h>
-#include <stdio.h>
-#include <stdlib.h>
+#define CHECK_HIP_ERROR(error)                            \
+  do                                                      \
+  {                                                       \
+    hipError_t err = error;                               \
+    if (err != hipSuccess)                                \
+    {                                                     \
+      printf("Failed: HIP error %s:%d '%s'\n",            \
+             __FILE__, __LINE__, hipGetErrorString(err)); \
+      exit(EXIT_FAILURE);                                 \
+    }                                                     \
+  } while (0)
 
-#define CHECK_HIP_ERROR(error)                \
-  if (error != hipSuccess)                    \
-  {                                           \
-    fprintf(stderr,                           \
-            "HIP error: '%s'(%d) at %s:%d\n", \
-            hipGetErrorString(error),         \
-            error,                            \
-            __FILE__,                         \
-            __LINE__);                        \
-    exit(EXIT_FAILURE);                       \
-  }
-
-#define CHECK_ROCBLAS_STATUS(status)              \
-  if (status != rocblas_status_success)           \
-  {                                               \
-    fprintf(stderr, "rocBLAS error: ");           \
-    fprintf(stderr,                               \
-            "rocBLAS error: '%s'(%d) at %s:%d\n", \
-            rocblas_status_to_string(status),     \
-            status,                               \
-            __FILE__,                             \
-            __LINE__);                            \
-    exit(EXIT_FAILURE);                           \
-  }
-
-#define RCCLCHECK(cmd)                                     \
+#define NCCLCHECK(cmd)                                     \
   do                                                       \
   {                                                        \
     ncclResult_t res = cmd;                                \
     if (res != ncclSuccess)                                \
     {                                                      \
-      printf("Failed, RCCL error %s:%d '%s'\n",            \
+      printf("Failed, NCCL error %s:%d '%s'\n",            \
              __FILE__, __LINE__, ncclGetErrorString(res)); \
       exit(EXIT_FAILURE);                                  \
     }                                                      \
@@ -53,7 +36,6 @@ int main(int argc, char *argv[])
   }
   int nDev = atoi(argv[1]);
   int size = atoi(argv[2]);
-
   ncclComm_t comms[nDev];
 
   // managing 2 devices
@@ -82,22 +64,20 @@ int main(int argc, char *argv[])
     CHECK_HIP_ERROR(hipStreamCreate(s + i));
   }
 
-  // initializing RCCL
-  for (int i = 0; i < nDev; ++i)
-  {
-    RCCLCHECK(ncclCommInitRank(comms + i, nDev, 0, i));
-  }
+  // initializing NCCL
+  NCCLCHECK(ncclCommInitAll(comms, nDev, devs));
 
-  // calling RCCL communication API. Group API is required when using
+  // calling NCCL communication API. Group API is required when using
   // multiple devices per thread
-  //  Starts the CUDA timer
+  //  Starts the HIP timer
   start = clock();
-  RCCLCHECK(ncclGroupStart());
+  NCCLCHECK(ncclGroupStart());
   for (int i = 0; i < nDev; ++i)
-    RCCLCHECK(ncclAllReduce((const void *)sendbuff[i], (void *)recvbuff[i], size, ncclFloat, ncclSum, comms[i], s[i]));
-  RCCLCHECK(ncclGroupEnd());
+    NCCLCHECK(ncclAllReduce((const void *)sendbuff[i], (void *)recvbuff[i], size, ncclFloat, ncclSum,
+                            comms[i], s[i]));
+  NCCLCHECK(ncclGroupEnd());
 
-  // synchronizing on HIP streams to wait for completion of RCCL operation
+  // synchronizing on HIP streams to wait for completion of NCCL operation
   for (int i = 0; i < nDev; ++i)
   {
     CHECK_HIP_ERROR(hipSetDevice(i));
@@ -117,9 +97,9 @@ int main(int argc, char *argv[])
 
   printf("%1.31f\n", milliseconds);
 
-  // finalizing RCCL
+  // finalizing NCCL
   for (int i = 0; i < nDev; ++i)
-    RCCLCHECK(ncclCommDestroy(comms[i]));
+    ncclCommDestroy(comms[i]);
 
   // Dump to CSV
   FILE *file = fopen("output.csv", "a");
