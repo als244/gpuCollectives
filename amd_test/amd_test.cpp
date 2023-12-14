@@ -56,7 +56,9 @@ int main(int argc, char *argv[])
   }
   int nDev = atoi(argv[1]);
   int size = atoi(argv[2]);
-  ncclComm_t comms[nDev];
+
+  // ncclComm_t comms[nDev];
+
   // managing 2 devices
   //  int nDev = 2;
   //  int size = 32*1024*1024;
