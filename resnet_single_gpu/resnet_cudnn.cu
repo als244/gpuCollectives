@@ -1358,7 +1358,8 @@ void prepreAndDoConvolutionDeriv(Train_ResNet * trainer, int in_spatial_dim, int
 	cudnnConvolutionDescriptor_t convolution_descriptor;
 	cudnnCreateConvolutionDescriptor(&convolution_descriptor);
 	cudnnSetConvolution2dDescriptor(convolution_descriptor, kern_dim / 2, kern_dim / 2, stride, stride, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT);
-	cudnnSetConvolutionMathType(convolution_descriptor, CUDNN_TENSOR_OP_MATH_ALLOW_CONVERSION);
+	
+	size_t inp_size = in_spatial_dim * in_spatial_dim * batch_size * in_filters;
 
 	const float a_dummy = 1, b_dummy = 0;
 
@@ -1424,12 +1425,19 @@ void prepreAndDoConvolutionDeriv(Train_ResNet * trainer, int in_spatial_dim, int
 		cudaMalloc(&workspace_data, workspace_bytes);
 		//printf("Backward Data Workspace Bytes: %zu\n", workspace_bytes);
 
+		float * temp_in_deriv;
 		if (toAdd){
-			beta = 1;
+			cudaMalloc(&temp_in_deriv, inp_size * sizeof(float));
+			cudaMemcpy(temp_in_deriv, input_deriv, inp_size * sizeof(float), cudaMemcpyDeviceToDevice);
 		}
 
 		status = cudnnConvolutionBackwardData(trainer -> cudnnHandle, &alpha, kernel_descriptor, weights, output_descriptor, out_deriv, convolution_descriptor, convolution_data_algorithm, 
 										workspace_data, workspace_bytes, &beta, input_descriptor, input_deriv);
+
+		if (toAdd){
+			prepareAndDoTensorOp(trainer, "ADD", inp_size, in_spatial_dim, in_filters, batch_size, input_deriv, temp_in_deriv, input_deriv);
+			cudaFree(temp_in_deriv);
+		}
 
 		cudaFree(workspace_data);
 		workspace_bytes = 0;
