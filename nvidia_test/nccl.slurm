@@ -37,12 +37,13 @@
 #./SingProcMultDevAllReduce 2 4096 (512B)
 #./SingProcMultDevAllReduce 2 2048 (256B)
 #./SingProcMultDevAllReduce 2 1024 (128B)
-./SingProcMultDevAllReduce 2 1024 
-./SingProcMultDevAllReduce 2 1024 
-./SingProcMultDevAllReduce 2 1024 
-./SingProcMultDevAllReduce 2 1024 
-./SingProcMultDevAllReduce 2 1024 
-./SingProcMultDevAllReduce 2 1024
-./SingProcMultDevAllReduce 2 1024 
-./SingProcMultDevAllReduce 2 1024  
-./SingProcMultDevAllReduce 2 1024 
+./SingProcMultDevBroadcast 2 1024
+./SingProcMultDevBroadcast 2 1024
+./SingProcMultDevBroadcast 2 1024
+./SingProcMultDevBroadcast 2 1024
+./SingProcMultDevBroadcast 2 1024
+./SingProcMultDevBroadcast 2 1024
+./SingProcMultDevBroadcast 2 1024
+./SingProcMultDevBroadcast 2 1024
+./SingProcMultDevBroadcast 2 1024
+./SingProcMultDevBroadcast 2 1024

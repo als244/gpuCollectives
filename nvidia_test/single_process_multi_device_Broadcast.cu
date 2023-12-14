@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
     exit(EXIT_FAILURE);
   }
   int nDev = atoi(argv[1]);
-  int size = atoi(argv[2]);
+  long size = atol(argv[2]);
   ncclComm_t comms[nDev];
   //managing 2 devices
   // int nDev = 2;
@@ -104,7 +104,8 @@ int main(int argc, char* argv[])
   }
   fprintf(file, "%s,", argv[0]);
   fprintf(file, "%1.31f,", milliseconds);
-  fprintf(file, "%i,", size);
+  fprintf(file, "%ld,", size);
+  fprintf(file, "%i", nDev);
   fprintf(file, "\n");
 
   fclose(file);
