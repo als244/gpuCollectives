@@ -35,11 +35,11 @@
 #define RCCLCHECK(cmd)                                     \
   do                                                       \
   {                                                        \
-    rcclResult_t res = cmd;                                \
-    if (res != rcclSuccess)                                \
+    ncclResult_t res = cmd;                                \
+    if (res != ncclSuccess)                                \
     {                                                      \
       printf("Failed, RCCL error %s:%d '%s'\n",            \
-             __FILE__, __LINE__, rcclGetErrorString(res)); \
+             __FILE__, __LINE__, ncclGetErrorString(res)); \
       exit(EXIT_FAILURE);                                  \
     }                                                      \
   } while (0)
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
   int nDev = atoi(argv[1]);
   int size = atoi(argv[2]);
 
-  rcclComm_t comms[nDev];
+  ncclComm_t comms[nDev];
 
   // managing 2 devices
   //  int nDev = 2;
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
   // initializing RCCL
   for (int i = 0; i < nDev; ++i)
   {
-    RCCLCHECK(rcclCommInitRank(comms + i, nDev, 0, i));
+    RCCLCHECK(ncclCommInitRank(comms + i, nDev, 0, i));
   }
 
   // calling RCCL communication API. Group API is required when using
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
   start = clock();
   RCCLCHECK(rcclGroupStart());
   for (int i = 0; i < nDev; ++i)
-    RCCLCHECK(rcclAllReduce((const void *)sendbuff[i], (void *)recvbuff[i], size, rcclFloat, rcclSum, comms[i], s[i]));
+    RCCLCHECK(rcclAllReduce((const void *)sendbuff[i], (void *)recvbuff[i], size, ncclFloat, ncclSum, comms[i], s[i]));
   RCCLCHECK(rcclGroupEnd());
 
   // synchronizing on HIP streams to wait for completion of RCCL operation
