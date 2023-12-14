@@ -3383,10 +3383,17 @@ int main(int argc, char *argv[]) {
 	int N_SHARDS = 2;
 	iterations_per_epoch = (float) (N_SHARDS * SHARD_N_IMAGES) / BATCH_SIZE;
 
+	struct timespec t1, t2;
+
 	for (int epoch = cur_epoch; epoch < N_EPOCHS; epoch++){
 		epoch_loss = 0;
 		epoch_n_wrong = 0;
 		for (int iter = cur_iter_in_epoch; iter < iterations_per_epoch; iter++){
+
+			// start timer after first iteration because that is anomolous (computing best kernels on first pass)
+			if (iter == 1){
+				clock_gettime(CLOCK_REALTIME, &t1);
+			}
 
 			// if (iter == 50){
 			// 	exit(0);
@@ -3485,6 +3492,12 @@ int main(int argc, char *argv[]) {
 		cur_iter_in_epoch = 0;
 
 	}
+
+	clock_gettime(CLOCK_REALTIME, &t2);
+
+	double time = (t2.tv_sec - t1.tv_sec)  + (double) (t2.tv_nsec - t1.tv_nsec) / 1000000000.0;
+
+	printf("\n\nTIME TAKEN: 1.31%f\n", time);
 
 	// DO A FINAL DUMP AFTER MODEL FINISHES (stored at 77777777)
 	int FINAL_DUMP_ID = 77777777;
