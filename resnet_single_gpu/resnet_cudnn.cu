@@ -3437,6 +3437,6 @@ int main(int argc, char *argv[]) {
 
 	// DO A FINAL DUMP AFTER MODEL FINISHES (stored at 77777777)
 	int FINAL_DUMP_ID = 77777777;
-	dump_trainer(FINAL_DUMP_ID, trainer, trainer -> dump_dir);
+	//dump_trainer(FINAL_DUMP_ID, trainer, trainer -> dump_dir);
 
 }
