@@ -55,7 +55,7 @@ for gpu in gpu_inputs:
             # edit_slurm_script(slurm_script_path, num_gpus=gpu, memory_input=mem, program_input=prog)
             # change_environment_vars(environment_vars_path, proto='Simple', threads=512)
             # execute_slurm_script(slurm_script_path)
-            cd = f'./{prog} {gpus} {mem}\n'
+            cd = f'./{prog} {gpu} {mem}\n'
             os.system(cd)
 
 
