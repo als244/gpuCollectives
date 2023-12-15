@@ -1,48 +1,31 @@
 // The following code depicts a complete working example
 // with a single process that manages multiple devices:
-// #include "/opt/rccl/include/rccl.h"
-#include <rccl/rccl.h>
+#include <stdio.h>
+#include <cuda.h>
+#include <cuda_runtime.h>
+#include "/usr/include/nccl.h"
 #include <time.h>
 
-#include <hip/hip_runtime.h>
-#include <math.h>
-#include <rocblas/rocblas.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#define CHECK_HIP_ERROR(error)                \
-  if (error != hipSuccess)                    \
-  {                                           \
-    fprintf(stderr,                           \
-            "hip error: '%s'(%d) at %s:%d\n", \
-            hipGetErrorString(error),         \
-            error,                            \
-            __FILE__,                         \
-            __LINE__);                        \
-    exit(EXIT_FAILURE);                       \
-  }
-
-#define CHECK_ROCBLAS_STATUS(status)              \
-  if (status != rocblas_status_success)           \
-  {                                               \
-    fprintf(stderr, "rocBLAS error: ");           \
-    fprintf(stderr,                               \
-            "rocBLAS error: '%s'(%d) at %s:%d\n", \
-            rocblas_status_to_string(status),     \
-            status,                               \
-            __FILE__,                             \
-            __LINE__);                            \
-    exit(EXIT_FAILURE);                           \
-  }
-
-#define RCCLCHECK(cmd)                                     \
+#define CUDACHECK(cmd)                                     \
   do                                                       \
   {                                                        \
-    rcclResult_t res = cmd;                                \
-    if (res != rcclSuccess)                                \
+    cudaError_t err = cmd;                                 \
+    if (err != cudaSuccess)                                \
     {                                                      \
-      printf("Failed, RCCL error %s:%d '%s'\n",            \
-             __FILE__, __LINE__, rcclGetErrorString(res)); \
+      printf("Failed: Cuda error %s:%d '%s'\n",            \
+             __FILE__, __LINE__, cudaGetErrorString(err)); \
+      exit(EXIT_FAILURE);                                  \
+    }                                                      \
+  } while (0)
+
+#define NCCLCHECK(cmd)                                     \
+  do                                                       \
+  {                                                        \
+    ncclResult_t res = cmd;                                \
+    if (res != ncclSuccess)                                \
+    {                                                      \
+      printf("Failed, NCCL error %s:%d '%s'\n",            \
+             __FILE__, __LINE__, ncclGetErrorString(res)); \
       exit(EXIT_FAILURE);                                  \
     }                                                      \
   } while (0)
@@ -55,10 +38,8 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
   int nDev = atoi(argv[1]);
-  int size = atoi(argv[2]);
-
-  // ncclComm_t comms[nDev];
-
+  long size = atol(argv[2]);
+  ncclComm_t comms[nDev];
   // managing 2 devices
   //  int nDev = 2;
   //  int size = 32*1024*1024;
@@ -131,7 +112,8 @@ int main(int argc, char *argv[])
   }
   fprintf(file, "%s,", argv[0]);
   fprintf(file, "%1.31f,", milliseconds);
-  fprintf(file, "%i,", size);
+  fprintf(file, "%ld,", size);
+  fprintf(file, "%i", nDev);
   fprintf(file, "\n");
 
   fclose(file);
