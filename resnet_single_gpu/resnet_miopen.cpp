@@ -4,6 +4,8 @@
 #include <math.h>
 #include <hip/hip_runtime.h>
 #include <hiprand/hiprand.h>
+#include <pthread.h>
+#include <sys/shm.h>
 #include <stdint.h>
 
 #include "resnet_miopen.h"
@@ -18,6 +20,7 @@
 #define MAX_SHARED_MEMORY 48000
 #define MAX_SHARED_MEM_FLOATS 12000
 #define MAX_THREAD_PER_BLOCK_INCL_REG 512
+#define MAX_GRAD_SIZE
 
 #define MAX_REQ_CONV_FIND_ALGO 5
 
@@ -3196,6 +3199,63 @@ void check_errors(Train_ResNet * trainer, int param_size, float * model_location
 	free(cpu_param_var);
 }
 
+
+struct shared_struct {
+    float gradients_all[MAX_GRAD_SIZE];
+    pthread_mutex_t * is_done;
+};
+
+struct thread_data {
+    int location_ind;
+    int param_size;
+    float * grad_location_local;
+};
+
+
+void setup_all_reduce(int n_locations, int * param_sizes, float ** current_gradient_locations){
+
+	pthread_t threads[n_locations];
+	struct thread_data thread_data_array[n_locations];
+
+	void * shared_mem;
+	struct shared_struct * shmem_struct; = ;
+
+	for (int i = 0; i < number_threads; i++){
+		thread_data_array[i].location_ind = i;
+		thread_data_array[i].param_size = param_sizes[i];
+		thread_data_array[i].grad_location_local = current_gradient_locations[i];
+		pthread_create(&threads[i], NULL, peer_all_reduce_grads, (void *) &thread_data_array[i]);
+	}
+
+	for (int i = 0; i < number_threads; i++){
+			pthread_join(threads[i], NULL);
+	}
+
+}
+
+// spwan # of 
+void peer_all_reduce_grads(void * thread_data_inp){
+
+
+	int shmid;
+
+	int location_ind = thread_data_inp -> location_ind;
+	int param_size = thread_data_inp -> param_size;
+	float * grad_location_local = thread_data_inp;
+
+	shmid = shmget((key_t) location_ind, sizeof(struct shared_struct), 0666 | IPC_CREAT);
+
+	void * shared_memory = shmat(shmid, (void *) 0, 0);
+
+	printf("Location %d: %X\n", (int) shared_memory);
+
+	struct shared_struct * shmem_struct = (struct shared_struct *) shared_memory;
+
+
+}
+
+
+
 // doing ADAM optimizer
 void update_parameters(Train_ResNet * trainer){
 	
@@ -3239,10 +3299,13 @@ void update_parameters(Train_ResNet * trainer){
 		//dump_trainer(cur_dump_id, trainer, trainer -> dump_dir);
 	}
 	
+
+
 	for (int i = n_locations - 1; i >= 0; i--){
 		param_size = param_sizes[i];
-		model_location = model_params_locations[i];
 		grad_location = current_gradient_locations[i];
+
+		model_location = model_params_locations[i];
 		mean_location = prev_grad_means_locations[i];
 		var_location = prev_grad_vars_locations[i];
 
