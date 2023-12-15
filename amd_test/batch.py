@@ -48,6 +48,7 @@ program_inputs = ['spmd_ar', 'spmd_b', 'spmd_r']
 proto_inputs = ['Simple', 'LL', 'LL128']
 thread_inputs = [64, 128, 256, 512]
 
+timestorun = 9
 
 for gpu in gpu_inputs:
     for mem in memory_inputs:
@@ -55,8 +56,9 @@ for gpu in gpu_inputs:
             # edit_slurm_script(slurm_script_path, num_gpus=gpu, memory_input=mem, program_input=prog)
             # change_environment_vars(environment_vars_path, proto='Simple', threads=512)
             # execute_slurm_script(slurm_script_path)
-            cd = f'./{prog} {gpu} {mem}\n'
-            os.system(cd)
+            for i in range(timestorun):
+                cd = f'./{prog} {gpu} {mem}\n'
+                os.system(cd)
 
 
 
