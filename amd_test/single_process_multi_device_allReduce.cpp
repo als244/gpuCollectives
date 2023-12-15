@@ -3,9 +3,10 @@
 #include <stdio.h>
 // #include <cuda.h>
 // #include <cuda_runtime.h>
-#include "/usr/include/nccl.h"
+// #include "/usr/include/nccl.h"
 #include <time.h>
 
+#include <rccl/rccl.h>
 #include <hip/hip_runtime.h>
 #include <math.h>
 #include <rocblas/rocblas.h>
@@ -82,7 +83,7 @@ int main(int argc, char *argv[])
   double milliseconds;
   clock_t start, end;
 
-    // allocating and initializing device buffers
+  // allocating and initializing device buffers
   float **sendbuff = (float **)malloc(nDev * sizeof(float *));
   float **recvbuff = (float **)malloc(nDev * sizeof(float *));
   hipStream_t *s = (hipStream_t *)malloc(sizeof(hipStream_t) * nDev);
