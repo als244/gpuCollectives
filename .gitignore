@@ -1,5 +1,4 @@
 **/slurm_outs
 **/**/*.out
 **/**/*.nsys-rep
-**/**/nccl_py.slurm
 **/**/nccl_2.slurm
