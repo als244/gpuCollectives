@@ -1,7 +1,7 @@
 CC = hipcc
 CFLAGS = -g3 -std=c99 -pedantic -Wall
 
-all: getDevices amdTest miOpen 
+all: getDevices amdTest miOpen spmd
 
 getDevices: amd_get_devices.cpp
 	hipcc amd_get_devices.cpp -o getDevices
@@ -15,7 +15,7 @@ miOpen: amd_miopen.cpp
 # rccl_test: amd_test.cpp
 # 	hipcc amd_test.cpp -o miOpen -lm -lrccl
 
-spmd: single_proc_multi_dev_allReduce.cpp
-	hipcc single_proc_multi_dev_allReduce.cpp -o spmd -lm -lrccl
+spmd: single_process_multi_device_allReduce.cpp
+	hipcc single_process_multi_device_allReduce.cpp -o spmd -lm -lrccl
 
 # nvcc -I /usr/include -L /lib64 -lnccl -g -G -arch=sm_80 single_process_multi_device_allReduce.cu -o SingProcMultDevAllReduce
