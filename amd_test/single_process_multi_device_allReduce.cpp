@@ -64,24 +64,31 @@
 
 int main(int argc, char *argv[])
 {
+  // if (argc < 3)
+  // {
+  //   fprintf(stderr, "Usage: %s <Number of GPUs> <Buffer Size> \n", argv[0]);
+  //   exit(EXIT_FAILURE);
+  // }
+  // int nDev = atoi(argv[1]);
+  // long size = atol(argv[2]);
+  // ncclComm_t comms[nDev];
+  // // managing 2 devices
+  // //  int nDev = 2;
+  // //  int size = 32*1024*1024;
+  // int devs[nDev]; // = {0, 1}; //, 2, 3 };
+  // for (int i = 0; i < nDev; i++)
+  // {
+  //   devs[i] = i;
+  // }
+  // double milliseconds;
+  // clock_t start, end;
   if (argc < 3)
   {
     fprintf(stderr, "Usage: %s <Number of GPUs> <Buffer Size> \n", argv[0]);
     exit(EXIT_FAILURE);
   }
   int nDev = atoi(argv[1]);
-  long size = atol(argv[2]);
-  ncclComm_t comms[nDev];
-  // managing 2 devices
-  //  int nDev = 2;
-  //  int size = 32*1024*1024;
-  int devs[nDev]; // = {0, 1}; //, 2, 3 };
-  for (int i = 0; i < nDev; i++)
-  {
-    devs[i] = i;
-  }
-  double milliseconds;
-  clock_t start, end;
+  int size = atoi(argv[2]);
 
   // allocating and initializing device buffers
   float **sendbuff = (float **)malloc(nDev * sizeof(float *));
